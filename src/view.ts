@@ -2,9 +2,9 @@ import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { createApp, App as VueApp } from 'vue';
 import App from './App.vue';
 
-export const VIEW_TYPE: string = 'my-view';
+export const VIEW_TYPE: string = 'contentlayer-popup';
 
-export class MyView extends ItemView {
+export class LayerPopup extends ItemView {
     vueapp: VueApp;
     constructor(leaf: WorkspaceLeaf) {
         super(leaf);

@@ -6,9 +6,8 @@ import {
     PluginSettingTab,
     Setting
 } from 'obsidian';
-
-import { MyView, VIEW_TYPE } from './view'
-
+import { LayerPopup, VIEW_TYPE } from './view'
+import LayerPopupModal from './LayerPopupModal'
 
 interface MyPluginSettings {
     mySetting: string;
@@ -23,13 +22,7 @@ export default class MyPlugin extends Plugin {
 
     async onload() {
         await this.loadSettings();
-
-        this.registerView(
-            VIEW_TYPE,
-            (leaf) => new MyView(leaf)
-        )
-
-        this.addRibbonIcon('dice', 'Open my view', (evt) => {
+        this.addRibbonIcon('hammer', 'Open my view', (evt) => {
             this.activateView()
         })
 
@@ -47,17 +40,7 @@ export default class MyPlugin extends Plugin {
         await this.saveData(this.settings);
     }
     async activateView() {
-        if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0) {
-            await this.app.workspace.getRightLeaf(false).setViewState({
-                type: VIEW_TYPE,
-                active: true,
-            })
-        }
-
-        this.app.workspace.revealLeaf(
-            this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
-        )
+        new LayerPopupModal(this.app).open()
     }
 }
-
 

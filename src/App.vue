@@ -6,8 +6,6 @@
 </template>
 
 <script setup lang="tsx">
-import Hello from "./Hello";
-import Hi from "./Hi.vue";
 import { ref } from "vue";
 let hi = ref("");
 let HiHi = () => (<h1><Hello></Hello></h1>)
