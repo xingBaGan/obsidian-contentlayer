@@ -6,5 +6,17 @@ h2[data-v-f8994186] {
 h2[data-v-ce9a529d] {
   color: lightcoral;
 }
+.compile-btn[data-v-ce9a529d] {
+  background-color: lightcoral;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
+}
+.popup-container[data-v-ce9a529d] {
+  padding: 5px 0;
+}
 
 /* src/main.css */
