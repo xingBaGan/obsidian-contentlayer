@@ -64,3 +64,22 @@ await esbuild.build({
     allowOverwrite: true,
     minify: false,
 });
+
+await esbuild.build({
+    entryPoints: ["./server.js"],
+    outfile: "contentlayer_server.js",
+    bundle: true,
+    format: "cjs",
+    watch: !prod,
+    target: "node16",
+    platform: "node",
+    logLevel: "info",
+    external: [
+        'express',
+        'cors',
+        './.contentlayer/generated/index.mjs',
+    ],
+    sourcemap: false,
+    minify: prod ? true : false,
+    treeShaking: true,
+})

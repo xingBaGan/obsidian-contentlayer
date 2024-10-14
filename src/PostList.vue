@@ -11,18 +11,11 @@
 <script setup lang="tsx">
 const vaultPath = 'D:\\code_workspace\\xmind-obsidian\\xmind-obsidian\\md';
 import { allPosts } from '../.contentlayer/generated/index.mjs';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive } from 'vue';
 
 const posts = reactive(allPosts)
 const running = ref(false)
 const key = ref(0)
-
-onMounted(() => {
-  // console.log('posts', posts)
-  setTimeout(async () => {
-    // posts.splice(0, posts.length, ...newPosts)
-  }, 1000)
-})
 
 const compileBlog = () => {
   running.value = true
@@ -41,10 +34,6 @@ const compileBlog = () => {
     key.value++
   })
 }
-// watch(() => props.running, (newVal, oldVal) => {
-//   console.log('newVal', newVal)
-//   console.log('oldVal', oldVal)
-// }, { immediate: true })
 </script>
 
 

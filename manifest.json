@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-vue-template",
-	"name": "Vue Template",
+	"id": "contentlayer-builder",
+	"name": "contentlayer-builder",
 	"version": "0.0.1",
 	"minAppVersion": "0.12.0",
-	"description": "for test",
+	"description": "build posts for contentlayer",
 	"author": "the_tree",
 	"authorUrl": "",
 	"isDesktopOnly": true

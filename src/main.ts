@@ -5,12 +5,16 @@ import { VIEW_TYPE } from './view'
 import { WorkspaceLeaf } from "obsidian";
 import LayerPopupModal from './LayerPopupModal'
 import { SliderView, VIEW_TYPE_SLIDER } from './SliderView'
+import { SettingTab } from "./settings";
+
 interface MyPluginSettings {
-    mySetting: string;
+    postsSubFolderName: string;
+    gitRepoURL: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-    mySetting: 'default'
+    postsSubFolderName: 'md',
+    gitRepoURL: 'https://github.com/xmind-obsidian/xmind-obsidian.git'
 }
 
 export default class MyPlugin extends Plugin {
@@ -25,6 +29,9 @@ export default class MyPlugin extends Plugin {
 
         // 注册一个侧边栏
         this.registerView(VIEW_TYPE_SLIDER, (leaf) => new SliderView(leaf))
+
+        // 添加一个settingTab
+        this.addSettingTab(new SettingTab(this.app, this))
     }
 
     onunload() {
@@ -38,10 +45,10 @@ export default class MyPlugin extends Plugin {
     async saveSettings() {
         await this.saveData(this.settings);
     }
+
     async activateView() {
         new LayerPopupModal(this.app).open()
     }
-
 
     async activateSliderView() {
         const { workspace } = this.app;

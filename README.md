@@ -17,7 +17,7 @@ If above steps work, you can turn on 'Vue Template' plugin in Obsidian. Click th
 
 4. When you get ready to build a release, run `npm run build` to create it. This will remove all codemaps and minify code size.
 
-
+5. Run `npm run server` to start a local server, which will provide a api for obsidian to get contentlayer data.
 
 ## Notice
 
