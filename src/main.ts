@@ -1,14 +1,10 @@
 import {
-    App,
-    Modal,
-    Notice,
     Plugin,
-    PluginSettingTab,
-    Setting
 } from 'obsidian';
-import { LayerPopup, VIEW_TYPE } from './view'
+import { VIEW_TYPE } from './view'
+import { WorkspaceLeaf } from "obsidian";
 import LayerPopupModal from './LayerPopupModal'
-
+import { SliderView, VIEW_TYPE_SLIDER } from './SliderView'
 interface MyPluginSettings {
     mySetting: string;
 }
@@ -22,10 +18,13 @@ export default class MyPlugin extends Plugin {
 
     async onload() {
         await this.loadSettings();
-        this.addRibbonIcon('hammer', 'Open my view', (evt) => {
-            this.activateView()
+        this.addRibbonIcon('hammer', '更新博客', (evt) => {
+            // this.activateView()
+            this.activateSliderView()
         })
 
+        // 注册一个侧边栏
+        this.registerView(VIEW_TYPE_SLIDER, (leaf) => new SliderView(leaf))
     }
 
     onunload() {
@@ -41,6 +40,27 @@ export default class MyPlugin extends Plugin {
     }
     async activateView() {
         new LayerPopupModal(this.app).open()
+    }
+
+
+    async activateSliderView() {
+        const { workspace } = this.app;
+
+        let leaf: WorkspaceLeaf | null = null;
+        const leaves = workspace.getLeavesOfType(VIEW_TYPE_SLIDER);
+
+        if (leaves.length > 0) {
+            // A leaf with our view already exists, use that
+            leaf = leaves[0];
+        } else {
+            // Our view could not be found in the workspace, create a new leaf
+            // in the right sidebar for it
+            leaf = workspace.getRightLeaf(false);
+            await leaf.setViewState({ type: VIEW_TYPE_SLIDER, active: true });
+        }
+
+        // "Reveal" the leaf in case it is in a collapsed sidebar
+        workspace.revealLeaf(leaf);
     }
 }
 

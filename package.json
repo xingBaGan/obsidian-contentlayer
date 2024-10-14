@@ -7,14 +7,25 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"content": "contentlayer build"
+		"content": "contentlayer build",
+		"server": "node server.js",
+		"server-watch": "nodemon --ignore *.contentlayer --ignore src server.js"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "MIT",
+	"nodemonConfig": {
+		"ignore": [
+			"src/*",
+			".contentlayer/*",
+			"nodemon.json"
+		],
+		"delay": 2500
+	},
 	"dependencies": {
 		"contentlayer": "^0.3.4",
-		"contentlayer/generated": "./.contentlayer",
+		"cors": "^2.8.5",
+		"express": "^4.21.1",
 		"pliny": "^0.3.1",
 		"reading-time": "^1.5.0",
 		"vue": "^3.2.31"
@@ -27,6 +38,7 @@
 		"builtin-modules": "^3.2.0",
 		"esbuild": "^0.14.49",
 		"hash-sum": "^2.0.0",
+		"nodemon": "^2.0.22",
 		"obsidian": "latest",
 		"tslib": "2.3.1",
 		"typescript": "4.4.4"
