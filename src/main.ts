@@ -69,5 +69,19 @@ export default class MyPlugin extends Plugin {
         // "Reveal" the leaf in case it is in a collapsed sidebar
         workspace.revealLeaf(leaf);
     }
+
+    async startContentlayerServer() {
+        // 获取文件路径
+        const currentFilePath = this.app.vault.adapter.getResourcePath('contentlayer_server.js');
+        console.log(currentFilePath);
+        const { exec } = require('child_process');
+        exec(`node ${currentFilePath}`, (error: any, stdout: any, stderr: any) => {
+            if (error) {
+                console.error(`执行命令时发生错误: ${error.message}`);
+                return;
+            }
+            console.log(`内容层服务器已启动: ${stdout}`);
+        });
+    }
 }
 

@@ -4,7 +4,8 @@
 	"version": "0.0.1",
 	"minAppVersion": "0.12.0",
 	"description": "build posts for contentlayer",
-	"author": "the_tree",
-	"authorUrl": "",
+	"repository": "https://github.com/xingBaGan/obsidian-contentlayer",
+	"author": "gan_xingba",
+	"authorUrl": "https://github.com/xingBaGan",
 	"isDesktopOnly": true
 }

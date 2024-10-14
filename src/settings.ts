@@ -42,5 +42,17 @@ export class SettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+
+    // 增加一个按钮，用来启动contentlayer_server.js
+    const setting3 = new Setting(containerEl);
+    setting3.setName("start contentlayer server")
+      .setDesc("start contentlayer server")
+      .addButton((button) =>
+        button
+          .setButtonText("start")
+          .onClick(() => {
+            this.plugin.startContentlayerServer();
+          })
+      );
   }
 }
