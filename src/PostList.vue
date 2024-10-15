@@ -1,10 +1,16 @@
 <template>
   <div class="popup-container" :key="key">
-    <button class="compile-btn" @click="compileBlog" :disabled="running">{{ running ? 'building...' : 'compile 博客'
-      }}</button>
     <ul>
       <li v-for="post in posts" :key="post._id">{{ post._id }}</li>
     </ul>
+    <div class="btn-container" style="display: flex; justify-content: space-between;">
+      <button class="compile-btn" @click="compileBlog" :disabled="running">{{ running ? 'building...' : 'compile 博客'
+      }}</button>
+      <div class="git-push-btn">
+        <button class="compile-btn" @click="pushToGit" :disabled="running || pushing">{{ pushing ? 'pushing...' : 'push to git'
+      }}</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -26,12 +32,26 @@ const compileBlog = () => {
       'Content-Type': 'application/json'
     }
   }).then(res => res.json()).then(data => {
-    const newPosts = data.posts
+    const newPosts = data.posts.allDocuments || [];
     posts.splice(0, posts.length, ...newPosts)
   }).finally(async () => {
     running.value = false
     // 重新渲染该组件
     key.value++
+  })
+}
+
+const pushing = ref(false)
+const pushToGit = () => {
+  pushing.value = true
+  // 调用 LayerPopupModal 的 runNodeCLI 方法
+  fetch('http://localhost:3001/push-to-git', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then(res => res.json()).then(data => {
+    pushing.value = false
   })
 }
 </script>

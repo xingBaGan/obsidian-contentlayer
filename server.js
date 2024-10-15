@@ -66,6 +66,26 @@ async function runNodeCLI() {
   }
 }
 
+async function pushToGit() {
+  const cdCommand = process.platform === 'win32' ? `cd "${vaultPath}"` : `cd '${vaultPath}'`;
+  const command = `${cdCommand} && git push origin main`;
+  try {
+    const result = await new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          reject(`${error.message}\n${error.stack}`);
+          return;
+        }
+        resolve(stdout);
+      });
+    });
+    console.log(`stdout: ${result}`);
+    console.log('push to git done')
+  } catch (error) {
+    console.log('push to git error', error)
+  }
+}
+
 function main() {
   app.get('/', (req, res)=>{
     res.send('contentlayer server started!')
@@ -79,6 +99,14 @@ function main() {
       code: 200,
       message: 'build contentlayer done',
       posts: posts
+    })
+  })
+
+  app.post('/push-to-git', async function (req, res) {
+    pushToGit()
+    res.send({
+      code: 200,
+      message: 'push to git done'
     })
   })
   
