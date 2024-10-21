@@ -1,6 +1,8 @@
 import MyPlugin from "./main";
 import { App, PluginSettingTab, Setting } from "obsidian";
+import { Vault } from "obsidian";
 
+const pluginName = 'obsidian-vue-starter';
 export class SettingTab extends PluginSettingTab {
   plugin: MyPlugin;
 
@@ -43,16 +45,64 @@ export class SettingTab extends PluginSettingTab {
           })
       );
 
-    // 增加一个按钮，用来启动contentlayer_server.js
-    // const setting3 = new Setting(containerEl);
-    // setting3.setName("start contentlayer server")
-    //   .setDesc("start contentlayer server")
-    //   .addButton((button) =>
-    //     button
-    //       .setButtonText("start")
-    //       .onClick(() => {
-    //         this.plugin.startContentlayerServer();
-    //       })
-    //   );
+    // 增加一个按钮，生成要启动的文件
+    const setting3 = new Setting(containerEl);
+    setting3.setName("generate start file")
+      .setDesc("generate start script")
+      .addButton((button) =>
+        button
+          .setButtonText("init plugin")
+          .onClick(async () => {
+            const { startScriptPath, stopScriptPath } = await this.createScript();
+            const vault = this.app.vault;
+            const guidanceFile = vault.getFileByPath('contentlayer_guidence.md');
+            if(guidanceFile){
+              console.log('guidanceFile already exists');
+              return;
+            }
+            vault.create('contentlayer_guidence.md', `## 如何启动项目\n\n[运行 CMD 脚本](${startScriptPath})\n\n[停止 CMD 脚本](${stopScriptPath})`);
+            console.log('guidanceFile created');
+          })
+      );
+  }
+
+  async createScript(){
+    const path = require('path');
+    const fs = require('fs');
+    const vault = this.app.vault;
+    const vaultPath = vault.adapter.basePath;
+    const configPath = vault.configDir;
+    const pluginDir = path.join(vaultPath, configPath, 'plugins', pluginName);
+    const startScriptPath = path.join(pluginDir, 'start.bat');
+    const stopScriptPath = path.join(pluginDir, 'stop.bat');
+    // make start bat script under pluginDir
+    if(fs.existsSync(startScriptPath) || fs.existsSync(stopScriptPath)){
+      return {
+        startScriptPath,
+        stopScriptPath
+      };
+    }
+    fs.writeFileSync(startScriptPath, '@echo off\n\n' +
+      'cd /d "' + pluginDir + '"\n' +
+      'node contentlayer_server.js\n' +
+      'pause');
+
+    // make stop bat script under pluginDir
+    fs.writeFileSync(stopScriptPath, '@echo off\n' +
+      'setlocal\n' +
+      '\n' +
+      'rem 查找占用 3001 端口的进程 ID\n' +
+      'for /f "tokens=5" %%a in (\'netstat -ano ^| findstr :3001\') do (\n' +
+      '    echo 找到占用 3001 端口的进程 ID: %% a\n' +
+      '    rem 终止该进程\n' +
+      '    taskkill / PID %% a / F\n' +
+      '    echo 进程 %% a 已被终止。\n' +
+      ')\n' +
+      'endlocal');
+
+    return {
+      startScriptPath,
+      stopScriptPath
+    };
   }
 }
