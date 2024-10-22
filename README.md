@@ -22,3 +22,12 @@ If above steps work, you can turn on 'Vue Template' plugin in Obsidian. Click th
 ## Notice
 
 + [hot-reload](https://forum.obsidian.md/t/plugin-release-for-developers-hot-reload-the-plugin-s-youre-developing/12185) plugin may be very helpful in your developing. It reloads the plugin whose `main.js` file changes, so you don't need do it yourself every time you make changes to code.
+
+### 如何插件开发？
+1. 打包的文件有哪些？
+main.css
+main.js
+manifest.json
+server.js
+
+

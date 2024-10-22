@@ -3,7 +3,7 @@
 	"name": "contentlayer-builder",
 	"version": "0.0.1",
 	"minAppVersion": "0.12.0",
-	"description": "build posts for contentlayer",
+	"description": "build posts for contentlayer, which is for https://github.com/xingBaGan/tailwind-nextjs-starter-blog",
 	"repository": "https://github.com/xingBaGan/obsidian-contentlayer",
 	"author": "gan_xingba",
 	"authorUrl": "https://github.com/xingBaGan",
