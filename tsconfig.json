@@ -24,4 +24,5 @@
     "**/*.tsx",
     "**/*.vue"
   ],
+  "resolveJsonModule": true,
 }

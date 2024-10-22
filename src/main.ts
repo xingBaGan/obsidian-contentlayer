@@ -2,18 +2,20 @@ import {
     Plugin,
 } from 'obsidian';
 import { VIEW_TYPE } from './view'
-import { WorkspaceLeaf } from "obsidian";
+import { WorkspaceLeaf, Editor, MarkdownView } from "obsidian";
 import LayerPopupModal from './LayerPopupModal'
 import { SliderView, VIEW_TYPE_SLIDER } from './SliderView'
 import { SettingTab } from "./settings";
+import { getPublishFilePath } from "./utils";
+
 
 interface MyPluginSettings {
-    postsSubFolderName: string;
+    publishFolderName: string;
     gitRepoURL: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-    postsSubFolderName: 'md',
+    publishFolderName: 'md',
     gitRepoURL: 'https://github.com/xmind-obsidian/xmind-obsidian.git'
 }
 
@@ -32,6 +34,20 @@ export default class MyPlugin extends Plugin {
 
         // 添加一个settingTab
         this.addSettingTab(new SettingTab(this.app, this))
+
+        this.addCommand({
+            id: 'to-publish-folder',
+            name: 'to publish folder',
+            editorCallback: (editor: Editor, view: MarkdownView) => {
+                // const publishFilePath = getPublishFilePath(this.app.vault, );
+                // copy file to publish folder
+                const currentFile = this.app.workspace.getActiveFile();
+                if (currentFile) {
+                    console.log('publishFilePath', currentFile, this.settings.publishFolderName);
+                    // this.app.vault.copy(currentFile, publishFilePath);
+                }
+            },
+        });
     }
 
     onunload() {
