@@ -4,7 +4,7 @@ const cors = require('cors');
 var app = express()
 app.use(cors());
 const port = 3001;
-const vaultPath = 'D:\\code_workspace\\xmind-obsidian\\xmind-obsidian\\md';
+const vaultPath = process.argv[2];
 async function installContentlayer() {
   try {
     const command = 'npm';

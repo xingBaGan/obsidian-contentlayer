@@ -44,7 +44,12 @@ export class SettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
-
+      
+    // add blod title
+    const title = new Setting(containerEl);
+    title.setHeading();
+    title.setName("operation");
+    
     // 增加一个按钮，生成要启动的文件
     const setting3 = new Setting(containerEl);
     setting3.setName("generate start file")
@@ -53,15 +58,16 @@ export class SettingTab extends PluginSettingTab {
         button
           .setButtonText("init plugin")
           .onClick(async () => {
-            const { startScriptPath, stopScriptPath } = await this.createScript();
-            const vault = this.app.vault;
-            const guidanceFile = vault.getFileByPath('contentlayer_guidence.md');
-            if(guidanceFile){
-              console.log('guidanceFile already exists');
-              return;
-            }
-            vault.create('contentlayer_guidence.md', `## 如何启动项目\n\n[运行 CMD 脚本](${startScriptPath})\n\n[停止 CMD 脚本](${stopScriptPath})`);
-            console.log('guidanceFile created');
+            // const { startScriptPath, stopScriptPath } = await this.createScript();
+            // const vault = this.app.vault;
+            // const guidanceFile = vault.getFileByPath('contentlayer_guidence.md');
+            // if(guidanceFile){
+            //   console.log('guidanceFile already exists');
+            //   return;
+            // }
+            // vault.create('contentlayer_guidence.md', `## 如何启动项目\n\n[运行 CMD 脚本](${startScriptPath})\n\n[停止 CMD 脚本](${stopScriptPath})`);
+            // console.log('guidanceFile created');
+            this.createServerScript();
           })
       );
   }
@@ -104,5 +110,17 @@ export class SettingTab extends PluginSettingTab {
       startScriptPath,
       stopScriptPath
     };
+  }
+
+  async createServerScript(){
+    const path = require('path');
+    const vault = this.app.vault;
+    const vaultPath = vault.adapter.basePath;
+    const configPath = vault.configDir;
+    const mdDir = path.join(vaultPath, this.plugin.settings.postsSubFolderName);
+    const serverScriptPath = path.join(mdDir, 'server.js');
+    const text = await import('../server.js');
+    console.log(text);
+    // fs.writeFileSync(serverScriptPath, text);
   }
 }
