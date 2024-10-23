@@ -1,6 +1,6 @@
 import MyPlugin from "./main";
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { getPublishFilePath, getPluginDir } from "./utils";
+import { getPublishFilePath, getPluginDir, guidanceFileName } from "./utils";
 
 export class SettingTab extends PluginSettingTab {
   plugin: MyPlugin;
@@ -61,14 +61,14 @@ export class SettingTab extends PluginSettingTab {
             button.setDisabled(true);
             const { startScriptPath, stopScriptPath } = await this.createScript();
             const vault = this.app.vault;
-            const guidanceFile = vault.getFileByPath('contentlayer_guidence.md');
+            const guidanceFile = vault.getFileByPath(`${this.plugin.settings.publishFolderName}/${guidanceFileName}`);
             if(guidanceFile){
               console.log('guidanceFile already exists');
               button.setButtonText("init plugin");
               button.setDisabled(false);
               return;
             }
-            vault.create('contentlayer_guidence.md', `## 如何启动项目\n\n[运行 CMD 脚本](${startScriptPath})\n\n[停止 CMD 脚本](${stopScriptPath})`);
+            vault.create(`${this.plugin.settings.publishFolderName}/${guidanceFileName}`, `## 如何启动项目\n\n[运行 CMD 脚本](${startScriptPath})\n\n[停止 CMD 脚本](${stopScriptPath})`);
             console.log('guidanceFile created');
             button.setButtonText("init plugin");
             button.setDisabled(false);
@@ -96,7 +96,7 @@ export class SettingTab extends PluginSettingTab {
     const mdDir = getPublishFilePath(vault, this.plugin.settings.publishFolderName);
     fs.writeFileSync(startScriptPath, '@echo off\n\n' +
       'cd /d "' + pluginDir + '"\n' +
-      `node contentlayer_server.js "${mdDir}"\n` +
+      `node contentlayer_server.js "${mdDir}" "${pluginDir}/contentlayer.config.ts"\n` +
       'pause');
 
     // make stop bat script under pluginDir

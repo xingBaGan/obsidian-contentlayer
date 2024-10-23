@@ -14,7 +14,10 @@ function getPluginDir(vault) {
   return path.join(vaultPath, configPath, 'plugins', pluginName)
 }
 
+const guidanceFileName = 'contentlayer_guidence.md';
+
 module.exports = {
     getPublishFilePath,
     getPluginDir,
+    guidanceFileName,
 }

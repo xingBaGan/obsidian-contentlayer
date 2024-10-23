@@ -81,16 +81,25 @@ await esbuild.build({
     external: [
         // 'express',
         // 'cors',
-        // './.contentlayer/generated/index.mjs',
+        './.contentlayer/generated/index.mjs',
     ],
     sourcemap: false,
     minify: prod ? true : false,
     treeShaking: true,
 })
 
+// await esbuild.build({
+//     entryPoints: ["./contentlayer.config.ts"],
+//     outfile: !prod ? 'contentlayer.config.js' : path.resolve(baseDir, 'contentlayer.config.js'),
+//     bundle: true,
+//     platform: "node",
+//     target: "es2021",
+//     watch: !prod
+// })
 // 复制 manifest.json 到 contentlayer-builder 目录
 try {
     fs.copyFileSync('manifest.json', path.resolve(baseDir, 'manifest.json'));
+    fs.copyFileSync('contentlayer.config.ts', path.resolve(baseDir, 'contentlayer.config.ts'));
     console.log('manifest.json copied!');
 } catch (err) {
     console.error(err);

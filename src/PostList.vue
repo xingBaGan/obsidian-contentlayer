@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="tsx">
-const vaultPath = 'D:\\code_workspace\\xmind-obsidian\\xmind-obsidian\\md';
 import { allPosts } from '../.contentlayer/generated/index.mjs';
 import { ref, reactive } from 'vue';
 

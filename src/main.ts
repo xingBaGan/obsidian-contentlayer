@@ -6,7 +6,7 @@ import { WorkspaceLeaf, Editor, MarkdownView } from "obsidian";
 import LayerPopupModal from './LayerPopupModal'
 import { SliderView, VIEW_TYPE_SLIDER } from './SliderView'
 import { SettingTab } from "./settings";
-import { getPublishFilePath } from "./utils";
+import { guidanceFileName } from "./utils";
 
 
 interface MyPluginSettings {
@@ -35,16 +35,37 @@ export default class MyPlugin extends Plugin {
         // 添加一个settingTab
         this.addSettingTab(new SettingTab(this.app, this))
 
+        // publish file
         this.addCommand({
             id: 'to-publish-folder',
             name: 'to publish folder',
-            editorCallback: (editor: Editor, view: MarkdownView) => {
-                // const publishFilePath = getPublishFilePath(this.app.vault, );
-                // copy file to publish folder
+            editorCallback: async (editor: Editor, view: MarkdownView) => {
                 const currentFile = this.app.workspace.getActiveFile();
-                if (currentFile) {
-                    console.log('publishFilePath', currentFile, this.settings.publishFolderName);
-                    // this.app.vault.copy(currentFile, publishFilePath);
+                const fileName = currentFile?.name;
+                const destinationFileName = `${this.settings.publishFolderName}/${fileName}`;
+                const destinationFileExisted = this.app.vault.getAbstractFileByPath(destinationFileName);
+                if (destinationFileExisted) {
+                    const existedFile = this.app.vault.getFileByPath(destinationFileName);
+                    if (existedFile) {
+                        await this.app.vault.delete(existedFile);
+                    }
+                }
+                if (currentFile && fileName) {
+                    console.log('file updated');
+                    await this.app.vault.copy(currentFile, destinationFileName);
+                }
+            },
+        });
+
+        // open guidance file
+        this.addCommand({
+            id: 'open-start-file',
+            name: 'open start file',
+            callback: async () => {
+                const guidanceFile = this.app.vault.getAbstractFileByPath(`${this.settings.publishFolderName}/${guidanceFileName}`);
+                console.log('guidanceFile', guidanceFile);
+                if (guidanceFile) {
+                    this.app.workspace.openLinkText(guidanceFile.path, '');
                 }
             },
         });

@@ -5,6 +5,7 @@ var app = express()
 app.use(cors());
 const port = 3001;
 const vaultPath = process.argv[2];
+const configPath = process.argv[3];
 async function installContentlayer() {
   try {
     const command = 'npm';
@@ -48,10 +49,12 @@ async function runNodeCLI() {
   // 打印路径
   // const cdCommand = process.platform === 'win32' ? 'echo %cd%' : 'pwd'; // Updated command
   const cdCommand = process.platform === 'win32' ? `cd "${vaultPath}"` : `cd '${vaultPath}'`;
-  const command = `${cdCommand} && contentlayer build`
+  const contentlayerCommand = `contentlayer build --config ${configPath}`
+  const command = `${cdCommand} && ${contentlayerCommand}`
+  console.log('command', configPath)
   try {
     const result = await new Promise((resolve, reject) => {
-      exec('npx contentlayer build', { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
+      exec(contentlayerCommand, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
         if (error) {
           reject(`${error.message}\n${error.stack}`);
           return;
