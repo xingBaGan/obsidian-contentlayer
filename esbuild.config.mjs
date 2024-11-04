@@ -99,7 +99,8 @@ await esbuild.build({
 // 复制 manifest.json 到 contentlayer-builder 目录
 try {
     fs.copyFileSync('manifest.json', path.resolve(baseDir, 'manifest.json'));
-    fs.copyFileSync('contentlayer.config.ts', path.resolve(baseDir, 'contentlayer.config.ts'));
+    fs.copyFileSync('contentlayer.config.js', path.resolve(baseDir, 'contentlayer.config.js'));
+    fs.copyFileSync('package-deps.json', path.resolve(baseDir, 'package.json'));
     console.log('manifest.json copied!');
 } catch (err) {
     console.error(err);

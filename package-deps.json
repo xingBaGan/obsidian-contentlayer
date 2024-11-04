@@ -1,0 +1,13 @@
+{
+  "name": "obsidian-sample-plugin",
+  "version": "1.0.1",
+  "description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "contentlayer": "^0.3.4",
+    "pliny": "^0.3.1",
+    "reading-time": "^1.5.0"
+  }
+}

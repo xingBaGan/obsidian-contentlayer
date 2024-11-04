@@ -12,11 +12,13 @@ import { guidanceFileName } from "./utils";
 interface MyPluginSettings {
     publishFolderName: string;
     gitRepoURL: string;
+    publishDir: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
     publishFolderName: 'md',
-    gitRepoURL: 'https://github.com/xmind-obsidian/xmind-obsidian.git'
+    gitRepoURL: 'https://github.com/xmind-obsidian/xmind-obsidian.git',
+    publishDir: ''
 }
 
 export default class MyPlugin extends Plugin {

@@ -1,18 +1,19 @@
 const { exec, execSync } = require('child_process');
 var express = require('express')
 const cors = require('cors');
+const fs = require('fs');
 var app = express()
 app.use(cors());
 const port = 3001;
 const vaultPath = process.argv[2];
 const configPath = process.argv[3];
+const runningEmoji = '🚀';
+const command = 'npm';
 async function installContentlayer() {
   try {
-    const command = 'npm';
     const args = ['install', '-g', 'contentlayer'];
     const child = exec(`${command} ${args.join(' ')}`);
     // 正在运行emoji
-    const runningEmoji = '🚀';
     console.log(`${runningEmoji} 正在安装contentlayer...`);
     // 监听输出
     child.stdout.on('data', (data) => {
@@ -31,6 +32,22 @@ async function installContentlayer() {
   }
 }
 
+function installDeps() {
+  try {
+    console.log('检查是否有node_modules，没有则安装')
+    // 检查是否有node_modules，没有则安装
+    if (!fs.existsSync('node_modules')) {
+      console.log(`${runningEmoji} 正在安装其他依赖...`);
+      const args2 = ['install'];
+      // 安装其他一依赖
+      const child2 = execSync(`${command} ${args2.join(' ')}`, { encoding: 'utf8' });
+      console.log(child2);
+      console.log(`安装其他依赖完成，代码: 0 🎉`);
+    }
+  } catch (error) {
+    console.log('error', error);
+  }
+}
 async function runNodeCLI() {
   console.log('building...')
   // 如果不存在全局安装contentlayer，则先全局安装contentlayer，之后build
@@ -44,17 +61,9 @@ async function runNodeCLI() {
   } catch (error) {
     await installContentlayer()
   }
-    
-  // const command = 'contentlayer build';
-  // 打印路径
-  // const cdCommand = process.platform === 'win32' ? 'echo %cd%' : 'pwd'; // Updated command
-  const cdCommand = process.platform === 'win32' ? `cd "${vaultPath}"` : `cd '${vaultPath}'`;
-  const contentlayerCommand = `contentlayer build --config ${configPath}`
-  const command = `${cdCommand} && ${contentlayerCommand}`
-  console.log('command', configPath)
   try {
     const result = await new Promise((resolve, reject) => {
-      exec(contentlayerCommand, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
+      exec(`npx contentlayer build --config ${configPath}`, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
         if (error) {
           reject(`${error.message}\n${error.stack}`);
           return;
@@ -89,8 +98,9 @@ async function pushToGit() {
   }
 }
 
-function main() {
-  app.get('/', (req, res)=>{
+async function main() {
+  await installDeps()
+  app.get('/', (req, res) => {
     res.send('contentlayer server started!')
   })
 
@@ -112,7 +122,7 @@ function main() {
       message: 'push to git done'
     })
   })
-  
+
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
   })

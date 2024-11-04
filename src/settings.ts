@@ -26,6 +26,7 @@ export class SettingTab extends PluginSettingTab {
         .setValue(this.plugin.settings.publishFolderName)
         .onChange(async (value) => {
           this.plugin.settings.publishFolderName = value;
+          this.plugin.settings.publishDir = getPublishFilePath(this.app.vault, value);
           await this.plugin.saveSettings();
         })
     );
@@ -96,7 +97,7 @@ export class SettingTab extends PluginSettingTab {
     const mdDir = getPublishFilePath(vault, this.plugin.settings.publishFolderName);
     fs.writeFileSync(startScriptPath, '@echo off\n\n' +
       'cd /d "' + pluginDir + '"\n' +
-      `node contentlayer_server.js "${mdDir}" "${pluginDir}/contentlayer.config.ts"\n` +
+      `node contentlayer_server.js "${mdDir}" "${pluginDir}/contentlayer.config.js"\n` +
       'pause');
 
     // make stop bat script under pluginDir

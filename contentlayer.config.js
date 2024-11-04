@@ -1,12 +1,12 @@
-import { defineDocumentType, makeSource, ComputedFields } from 'contentlayer/source-files';
+import { defineDocumentType, makeSource } from 'contentlayer/source-files';
 import readingTime from 'reading-time'
 import siteMetadata from './siteMetadata';
 import {
   extractTocHeadings,
 } from 'pliny/mdx-plugins/index.js'
+import settings from './data.json'
 
-const vaultPath = 'D:\\code_workspace\\xmind-obsidian\\xmind-obsidian\\md';
-const computedFields: ComputedFields = {
+const computedFields = {
   readingTime: { type: 'json', resolve: (doc) => readingTime(doc.body.raw) },
   slug: {
     type: 'string',
@@ -67,6 +67,6 @@ export const Blog = defineDocumentType(() => ({
 }))
 
 export default makeSource({
-  contentDirPath: vaultPath, // 替换为您的内容目录
+  contentDirPath: settings.publishDir, // 替换为您的内容目录
   documentTypes: [Post, Blog],
 });
