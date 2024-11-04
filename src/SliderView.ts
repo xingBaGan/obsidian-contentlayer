@@ -21,7 +21,6 @@ export class SliderView extends ItemView {
 
   async onOpen() {
     let { contentEl } = this;
-    contentEl.setText("已编译的文件");
     const container = this.containerEl.children[1];
     let content = container.createEl("div", {
       cls: "my-plugin-view"

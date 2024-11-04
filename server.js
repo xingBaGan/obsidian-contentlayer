@@ -1,8 +1,12 @@
 const { exec, execSync } = require('child_process');
 var express = require('express')
 const cors = require('cors');
+const bodyParser = require('body-parser')
 const fs = require('fs');
 var app = express()
+
+app.use(bodyParser.json()) // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(cors());
 const port = 3001;
 const vaultPath = process.argv[2];
@@ -78,18 +82,29 @@ async function runNodeCLI() {
   }
 }
 
-async function pushToGit() {
+async function pushToGit(commitMessage) {
+  console.log('git commit', commitMessage)
+  const commitCommand = `git commit -m "${commitMessage}"`
+
   const cdCommand = process.platform === 'win32' ? `cd "${vaultPath}"` : `cd '${vaultPath}'`;
   const command = `${cdCommand} && git push origin main`;
   try {
     const result = await new Promise((resolve, reject) => {
-      exec(command, (error, stdout, stderr) => {
+      exec(`${cdCommand} && ${commitCommand}`, (error, stdout, stderr) => {
         if (error) {
-          reject(`${error.message}\n${error.stack}`);
+          reject(`commit error: ${error.message}\n${error.stack}`);
           return;
         }
         resolve(stdout);
       });
+
+      // exec(command, (error, stdout, stderr) => {
+      //   if (error) {
+      //     reject(`${error.message}\n${error.stack}`);
+      //     return;
+      //   }
+      //   resolve(stdout);
+      // });
     });
     console.log(`stdout: ${result}`);
     console.log('push to git done')
@@ -116,7 +131,8 @@ async function main() {
   })
 
   app.post('/push-to-git', async function (req, res) {
-    pushToGit()
+    const { commitMessage } = req.body
+    await pushToGit(commitMessage)  
     res.send({
       code: 200,
       message: 'push to git done'

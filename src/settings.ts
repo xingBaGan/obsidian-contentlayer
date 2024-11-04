@@ -69,7 +69,7 @@ export class SettingTab extends PluginSettingTab {
               button.setDisabled(false);
               return;
             }
-            vault.create(`${this.plugin.settings.publishFolderName}/${guidanceFileName}`, `## 如何启动项目\n\n[运行 CMD 脚本](${startScriptPath})\n\n[停止 CMD 脚本](${stopScriptPath})`);
+            vault.create(`${this.plugin.settings.publishFolderName}/${guidanceFileName}`, `---\n\ndraft: true\n---\n\n## 如何启动项目\n\n[运行 CMD 脚本](${startScriptPath})\n\n[停止 CMD 脚本](${stopScriptPath})`);
             console.log('guidanceFile created');
             button.setButtonText("init plugin");
             button.setDisabled(false);

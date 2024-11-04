@@ -1,27 +1,35 @@
 <template>
   <div class="popup-container" :key="key">
+    <h3>已经编译{{ posts.length }}篇博客</h3>
     <ul>
-      <li v-for="post in posts" :key="post._id">{{ post._id }}</li>
+      <li v-for="post in posts" :key="post._id">{{ post.title || post._id }}</li>
     </ul>
+    <div>
+      <input class="commit-message" type="text" v-model="commitMessage" :placeholder="msg" />
+      <button class="generate-commit-msg" @click="generateCommitMsg">generate msg</button>
+    </div>
     <div class="btn-container" style="display: flex; justify-content: space-between;">
       <button class="compile-btn" @click="compileBlog" :disabled="running">{{ running ? 'building...' : 'compile 博客'
-      }}</button>
+        }}</button>
       <div class="git-push-btn">
-        <button class="compile-btn" @click="pushToGit" :disabled="running || pushing">{{ pushing ? 'pushing...' : 'push to git'
-      }}</button>
+        <button class="compile-btn" @click="pushToGit" :disabled="running || pushing || !commitMessage">{{ pushing ?
+          'pushing...' : 'push to git'
+          }}</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="tsx">
-import { allPosts } from '../.contentlayer/generated/index.mjs';
 import { ref, reactive } from 'vue';
-
-const posts = reactive(allPosts)
+const posts = reactive([])
 const running = ref(false)
 const key = ref(0)
-
+const commitMessage = ref('')
+const msg = ref('输入commit message')
+const generateCommitMsg = () => {
+  commitMessage.value = new Date().toLocaleString()
+}
 const compileBlog = () => {
   running.value = true
   // 调用 LayerPopupModal 的 runNodeCLI 方法
@@ -48,7 +56,10 @@ const pushToGit = () => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    body: JSON.stringify({
+      commitMessage: commitMessage.value
+    })
   }).then(res => res.json()).then(data => {
     pushing.value = false
   })
@@ -59,6 +70,20 @@ const pushToGit = () => {
 <style scoped>
 h2 {
   color: lightcoral;
+}
+
+.generate-commit-msg {
+  width: 30%;
+  margin-left: 10px;
+  min-width: 100px;
+}
+
+.commit-message {
+  width: 63%;
+  height: 25px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  background-color: #f0f0f0;
 }
 
 .compile-btn {
