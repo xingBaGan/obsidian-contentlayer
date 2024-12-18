@@ -16,7 +16,7 @@ const runningEmoji = '🚀';
 const command = 'npm';
 async function installContentlayer() {
   try {
-    const args = ['install', '-g', 'contentlayer'];
+    const args = ['install', '-g', 'contentlayer', 'playwright'];
     const child = exec(`${command} ${args.join(' ')}`);
     // 正在运行emoji
     console.log(`${runningEmoji} 正在安装contentlayer...`);
@@ -32,6 +32,33 @@ async function installContentlayer() {
     child.on('close', (code) => {
       console.log(`安装contentlayer完成，代码: ${code} 🎉`);
     });
+    // bugfix: https://github.com/remcohaszing/remark-mermaidjs
+    const palywright = ['npx', 'playwright', 'install']
+    const child2 = exec(`${command} ${palywright.join(' ')}`);
+    child2.stdout.on('data', (data) => {
+      console.log(`${data}`);
+    });
+
+    child2.stderr.on('data', (data) => {
+      console.error(`${data}`);
+    });
+
+    child2.on('close', (code) => {
+      console.log(`安装playwright完成，代码: ${code} 🎉`);
+    });
+    const palywright2 = ['npx', 'playwright', 'install', '--with-deps', 'chromium']
+    const child3 = exec(`${command} ${palywright2.join(' ')}`);
+    child3.stdout.on('data', (data) => {
+      console.log(`${data}`);
+    });
+
+    child3.stderr.on('data', (data) => {
+      console.error(`${data}`);
+    });
+
+    child3.on('close', (code) => {
+      console.log(`安装playwright 依赖完成，代码: ${code} 🎉`);
+    });
   } catch (error) {
     console.log('error', error);
   }
@@ -39,33 +66,34 @@ async function installContentlayer() {
 
 function installDeps() {
   try {
-    console.log('检查是否有node_modules，没有则安装')
+    console.log('check node_modules dependencies install')
     // 检查是否有node_modules，没有则安装
     if (!fs.existsSync('node_modules')) {
-      console.log(`${runningEmoji} 正在安装其他依赖...`);
-      const args2 = ['install'];
+      console.log(`${runningEmoji} installing dependencies...`);
+      const args2 = ['install']
       // 安装其他一依赖
       const child2 = execSync(`${command} ${args2.join(' ')}`, { encoding: 'utf8' });
       console.log(child2);
-      console.log(`安装其他依赖完成，代码: 0 🎉`);
+      console.log(`install other dependencies done, code: 0 🎉`);
     }
   } catch (error) {
     console.log('error', error);
   }
 }
+
+async function checkContentlayer() {
+  try {
+    const result = execSync('contentlayer --version', { encoding: 'utf8' });
+    console.log(`contentlayer version: ${result} 🚀`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    await installContentlayer()
+  }
+}
+
 async function runNodeCLI() {
   console.log('building...')
   // 如果不存在全局安装contentlayer，则先全局安装contentlayer，之后build
-  try {
-    try {
-      const result = execSync('contentlayer --version', { encoding: 'utf8' });
-      console.log(`contentlayer version: ${result} 🚀`);
-    } catch (error) {
-      console.error(`Error: ${error.message}`);
-    }
-  } catch (error) {
-    await installContentlayer()
-  }
   try {
     const result = await new Promise((resolve, reject) => {
       exec(`npx contentlayer build --config ${configPath}`, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
@@ -112,7 +140,7 @@ async function showOnLocal() {
   const sourcePath = settings.pluginFolderPath + '\\' + contentlayerOutputFolderName
   const targetPath = settings.blogProjectPath + '\\' + settings.renameFileName
   console.log(sourcePath, targetPath)
-  exec(`xcopy ${sourcePath} ${targetPath} /E /I`);
+  exec(`xcopy ${sourcePath} ${targetPath} /E /I /Y`);
 }
 
 async function main() {
@@ -152,7 +180,9 @@ async function main() {
       message: 'show on local done'
     })
   })
-  app.listen(port, () => {
+
+  app.listen(port, async () => {
+    await checkContentlayer()
     console.log(`Example app listening on port ${port}`)
   })
 }
