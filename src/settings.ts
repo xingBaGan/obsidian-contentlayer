@@ -10,7 +10,6 @@ export class SettingTab extends PluginSettingTab {
     this.plugin = plugin;
     // 获取插件文件夹路径
     this.plugin.settings.pluginFolderPath = getPluginDir(this.app.vault);
-    console.log('pluginFolderPath', this.plugin.settings.pluginFolderPath);
     this.plugin.saveSettings();
   }
 
@@ -22,7 +21,7 @@ export class SettingTab extends PluginSettingTab {
     const postSubFolderName = new Setting(containerEl);
     // posts sub folder name
     postSubFolderName.setName("posts sub folder name")
-      .setDesc("If your file is under 'vault/folder', and you set subfolder name to 'attachments', attachments will be saved to 'vault/folder/attachments'")
+      .setDesc("The folder name of the your articles will be build in your obsidian folder name. If you make a folder named 'md' and you want to build the aritcles under 'md' folder, you should set this folder name to 'md'.")
     .addText((text) =>
       text
         .setPlaceholder("sub folder name")
@@ -37,7 +36,7 @@ export class SettingTab extends PluginSettingTab {
     // git repo url
     const gitRepoUrl = new Setting(containerEl);
     gitRepoUrl.setName("git repo url")
-      .setDesc("please input the contentlayer files you want to update")
+      .setDesc("the contentlayer build bundles that you hold in your github repo url. It use to trigger the build on vercel.")
       .addText((text) =>
         text
           .setPlaceholder("please input git repo url")
@@ -51,7 +50,7 @@ export class SettingTab extends PluginSettingTab {
     // 博客项目路径
     const settingBlogProjectPath = new Setting(containerEl);
     settingBlogProjectPath.setName("blog project path")
-      .setDesc("blog project path")
+      .setDesc("Your local blog project path. You can clone the blog project from https://github.com/xingBaGan/tailwind-nextjs-starter-blog.git and set the path to your local blog project path.")
       .addText((text) =>
         text
           .setPlaceholder("blog project path")
@@ -62,6 +61,19 @@ export class SettingTab extends PluginSettingTab {
           })
       );
       
+    // 新增输入框，要拷贝到博客项目，需要重命名的文件名
+    const renameFolderName = new Setting(containerEl);
+    renameFolderName.setName("rename folder (read only)")
+      .setDesc("The folder name of your local blog project contentlayer build bundles files folder name.")
+      .addText((text) =>
+        text.setDisabled(true)
+          .setPlaceholder("rename folder")
+          .setValue(this.plugin.settings.renameFolderName)
+          .onChange(async (value) => {
+            this.plugin.settings.renameFolderName = value;
+            await this.plugin.saveSettings();
+          })
+      );
     // add blod title
     const title = new Setting(containerEl);
     title.setHeading();
@@ -69,8 +81,8 @@ export class SettingTab extends PluginSettingTab {
 
     // 增加一个按钮，生成要启动的文件
     const generateStartFile = new Setting(containerEl);
-    generateStartFile.setName("generate start file")
-      .setDesc("generate start script")
+    generateStartFile.setName("init plugin")
+      .setDesc("It will generate the start script and stop script. And create the guidance file. you can start the plugin service by clicking the link on contentlayer_guidence.md.")
       .addButton((button) =>
         button
           .setButtonText("init plugin")
@@ -96,7 +108,7 @@ export class SettingTab extends PluginSettingTab {
     // 打开插件文件夹
     const openPluginFolder = new Setting(containerEl);
     openPluginFolder.setName("open plugin folder")
-      .setDesc("open plugin folder")
+      .setDesc("open the plugin folder that store the start script and stop script.")
       .addButton((button) =>
         button
           .setButtonText("open plugin folder")
@@ -110,19 +122,6 @@ export class SettingTab extends PluginSettingTab {
           })
       );
 
-    // 新增输入框，要拷贝到博客项目，需要重命名的文件名
-    const renameFileName = new Setting(containerEl);
-    renameFileName.setName("rename file")
-      .setDesc("rename file")
-      .addText((text) =>
-        text
-          .setPlaceholder("rename file")
-          .setValue(this.plugin.settings.renameFileName)
-          .onChange(async (value) => {
-            this.plugin.settings.renameFileName = value;
-            await this.plugin.saveSettings();
-          })
-      );
   }
 
   async createScript(){

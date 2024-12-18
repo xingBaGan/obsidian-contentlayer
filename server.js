@@ -138,7 +138,7 @@ async function showOnLocal() {
   console.log('copy to blog project');
   const { exec } = require('child_process');
   const sourcePath = settings.pluginFolderPath + '\\' + contentlayerOutputFolderName
-  const targetPath = settings.blogProjectPath + '\\' + settings.renameFileName
+  const targetPath = settings.blogProjectPath + '\\' + settings.renameFolderName
   console.log(sourcePath, targetPath)
   exec(`xcopy ${sourcePath} ${targetPath} /E /I /Y`);
 }

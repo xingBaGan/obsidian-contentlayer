@@ -13,7 +13,7 @@ interface MyPluginSettings {
     publishFolderName: string;
     gitRepoURL: string;
     publishDir: string;
-    renameFileName: string;
+    renameFolderName: string;
     blogProjectPath: string;
     pluginFolderPath: string;
 }
@@ -22,7 +22,7 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
     publishFolderName: 'md',
     gitRepoURL: 'https://github.com/xmind-obsidian/xmind-obsidian.git',
     publishDir: '',
-    renameFileName: '',
+    renameFolderName: '',
     blogProjectPath: '',
     pluginFolderPath: ''
 }
