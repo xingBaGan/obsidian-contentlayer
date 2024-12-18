@@ -3,10 +3,22 @@
 h2[data-v-f8994186] {
   color: lightcoral;
 }
-h2[data-v-ce9a529d] {
+h2[data-v-23f65b90] {
   color: lightcoral;
 }
-.compile-btn[data-v-ce9a529d] {
+.generate-commit-msg[data-v-23f65b90] {
+  width: 30%;
+  margin-left: 10px;
+  min-width: 100px;
+}
+.commit-message[data-v-23f65b90] {
+  width: 63%;
+  height: 25px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  background-color: #f0f0f0;
+}
+.compile-btn[data-v-23f65b90] {
   background-color: lightcoral;
   color: white;
   border: none;
@@ -15,7 +27,11 @@ h2[data-v-ce9a529d] {
   cursor: pointer;
   float: right;
 }
-.popup-container[data-v-ce9a529d] {
+.compile-btn[data-v-23f65b90]:disabled {
+  border: none;
+  cursor: not-allowed;
+}
+.popup-container[data-v-23f65b90] {
   padding: 5px 0;
 }
 

@@ -8,6 +8,10 @@ export class SettingTab extends PluginSettingTab {
   constructor(app: App, plugin: MyPlugin) {
     super(app, plugin);
     this.plugin = plugin;
+    // 获取插件文件夹路径
+    this.plugin.settings.pluginFolderPath = getPluginDir(this.app.vault);
+    console.log('pluginFolderPath', this.plugin.settings.pluginFolderPath);
+    this.plugin.saveSettings();
   }
 
   display(): void {
@@ -15,10 +19,9 @@ export class SettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    const setting1 = new Setting(containerEl);
-
+    const postSubFolderName = new Setting(containerEl);
     // posts sub folder name
-    setting1.setName("posts sub folder name")
+    postSubFolderName.setName("posts sub folder name")
       .setDesc("If your file is under 'vault/folder', and you set subfolder name to 'attachments', attachments will be saved to 'vault/folder/attachments'")
     .addText((text) =>
       text
@@ -32,8 +35,8 @@ export class SettingTab extends PluginSettingTab {
     );
 
     // git repo url
-    const setting2 = new Setting(containerEl);
-    setting2.setName("git repo url")
+    const gitRepoUrl = new Setting(containerEl);
+    gitRepoUrl.setName("git repo url")
       .setDesc("please input the contentlayer files you want to update")
       .addText((text) =>
         text
@@ -44,6 +47,20 @@ export class SettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+
+    // 博客项目路径
+    const settingBlogProjectPath = new Setting(containerEl);
+    settingBlogProjectPath.setName("blog project path")
+      .setDesc("blog project path")
+      .addText((text) =>
+        text
+          .setPlaceholder("blog project path")
+          .setValue(this.plugin.settings.blogProjectPath)
+          .onChange(async (value) => {
+            this.plugin.settings.blogProjectPath = value;
+            await this.plugin.saveSettings();
+          })
+      );
       
     // add blod title
     const title = new Setting(containerEl);
@@ -51,8 +68,8 @@ export class SettingTab extends PluginSettingTab {
     title.setName("operation");
 
     // 增加一个按钮，生成要启动的文件
-    const setting3 = new Setting(containerEl);
-    setting3.setName("generate start file")
+    const generateStartFile = new Setting(containerEl);
+    generateStartFile.setName("generate start file")
       .setDesc("generate start script")
       .addButton((button) =>
         button
@@ -73,6 +90,37 @@ export class SettingTab extends PluginSettingTab {
             console.log('guidanceFile created');
             button.setButtonText("init plugin");
             button.setDisabled(false);
+          })
+      );
+
+    // 打开插件文件夹
+    const openPluginFolder = new Setting(containerEl);
+    openPluginFolder.setName("open plugin folder")
+      .setDesc("open plugin folder")
+      .addButton((button) =>
+        button
+          .setButtonText("open plugin folder")
+          .onClick(async () => {
+            const pluginDir = getPluginDir(this.app.vault);
+            // 打开文件夹
+            const { exec } = require('child_process');
+            exec(`start explorer ${pluginDir}`);
+            // this.app.workspace.openLinkText(pluginDir, '', true);
+            console.log('pluginDir', pluginDir);
+          })
+      );
+
+    // 新增输入框，要拷贝到博客项目，需要重命名的文件名
+    const renameFileName = new Setting(containerEl);
+    renameFileName.setName("rename file")
+      .setDesc("rename file")
+      .addText((text) =>
+        text
+          .setPlaceholder("rename file")
+          .setValue(this.plugin.settings.renameFileName)
+          .onChange(async (value) => {
+            this.plugin.settings.renameFileName = value;
+            await this.plugin.saveSettings();
           })
       );
   }

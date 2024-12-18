@@ -13,12 +13,18 @@ interface MyPluginSettings {
     publishFolderName: string;
     gitRepoURL: string;
     publishDir: string;
+    renameFileName: string;
+    blogProjectPath: string;
+    pluginFolderPath: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
     publishFolderName: 'md',
     gitRepoURL: 'https://github.com/xmind-obsidian/xmind-obsidian.git',
-    publishDir: ''
+    publishDir: '',
+    renameFileName: '',
+    blogProjectPath: '',
+    pluginFolderPath: ''
 }
 
 export default class MyPlugin extends Plugin {

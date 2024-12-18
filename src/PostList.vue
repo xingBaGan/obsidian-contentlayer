@@ -1,6 +1,9 @@
 <template>
   <div class="popup-container" :key="key">
-    <h3>已经编译{{ posts.length }}篇博客</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3>已经编译{{ posts.length }}篇博客</h3>
+      <button @click="showOnLocal">display on local</button>
+    </div>
     <ul>
       <li v-for="post in posts" :key="post._id">{{ post.title || post._id }}</li>
     </ul>
@@ -48,6 +51,16 @@ const compileBlog = () => {
   })
 }
 
+const showOnLocal = () => {
+  fetch('http://localhost:3001/show-on-local', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then(res => res.json()).then(data => {
+    console.log('show on local', data)
+  })
+}
 const pushing = ref(false)
 const pushToGit = () => {
   pushing.value = true

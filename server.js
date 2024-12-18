@@ -3,8 +3,9 @@ var express = require('express')
 const cors = require('cors');
 const bodyParser = require('body-parser')
 const fs = require('fs');
+const settings = require('./data.json');
 var app = express()
-
+const contentlayerOutputFolderName = '.contentlayer';
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(cors());
@@ -97,20 +98,21 @@ async function pushToGit(commitMessage) {
         }
         resolve(stdout);
       });
-
-      // exec(command, (error, stdout, stderr) => {
-      //   if (error) {
-      //     reject(`${error.message}\n${error.stack}`);
-      //     return;
-      //   }
-      //   resolve(stdout);
-      // });
     });
     console.log(`stdout: ${result}`);
     console.log('push to git done')
   } catch (error) {
     console.log('push to git error', error)
   }
+}
+
+async function showOnLocal() {
+  console.log('copy to blog project');
+  const { exec } = require('child_process');
+  const sourcePath = settings.pluginFolderPath + '\\' + contentlayerOutputFolderName
+  const targetPath = settings.blogProjectPath + '\\' + settings.renameFileName
+  console.log(sourcePath, targetPath)
+  exec(`xcopy ${sourcePath} ${targetPath} /E /I`);
 }
 
 async function main() {
@@ -139,6 +141,17 @@ async function main() {
     })
   })
 
+  app.post('/show-on-local', async function (req, res) {
+    try {
+      await showOnLocal()
+    } catch (error) {
+      console.log('show on local error', error)
+    }
+    res.send({
+      code: 200,
+      message: 'show on local done'
+    })
+  })
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
   })
