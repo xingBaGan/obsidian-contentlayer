@@ -14,10 +14,9 @@ const vaultPath = process.argv[2];
 const configPath = process.argv[3];
 const runningEmoji = '🚀';
 const command = 'npm';
-
+const submodulePath = '.contentlayer'; // Define your submodule path here
 
 async function addGitSubmodule() {
-  const submodulePath = '.contentlayer'; // Define your submodule path here
   // clear the submodule
   try {
     // Check if the submodule already exists
@@ -149,7 +148,7 @@ async function runNodeCLI() {
   // 如果不存在全局安装contentlayer，则先全局安装contentlayer，之后build
   try {
     const result = await new Promise((resolve, reject) => {
-      exec(`contentlayer build --config ${configPath}`, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
+      exec(`npx contentlayer build --config ${configPath}`, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
         if (error) {
           reject(`${error.message}\n${error.stack}`);
           return;
@@ -166,13 +165,12 @@ async function runNodeCLI() {
 
 async function pushToGit(commitMessage) {
   console.log('git commit', commitMessage)
-  const commitCommand = `git commit -m "${commitMessage}"`
 
-  const cdCommand = process.platform === 'win32' ? `cd "${vaultPath}"` : `cd '${vaultPath}'`;
-  const command = `${cdCommand} && git push origin main`;
+  const cdCommand = process.platform === 'win32' ? `cd "${settings.pluginFolderPath}\\${submodulePath}"` : `cd '${settings.pluginFolderPath}${submodulePath}'`;
+  const command = `${cdCommand} && git add . && git commit -m "${commitMessage}" && git push origin main`;
   try {
     const result = await new Promise((resolve, reject) => {
-      exec(`${cdCommand} && ${commitCommand}`, (error, stdout, stderr) => {
+      exec(`${cdCommand} && ${command}`, (error, stdout, stderr) => {
         if (error) {
           reject(`commit error: ${error.message}\n${error.stack}`);
           return;
