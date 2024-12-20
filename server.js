@@ -14,6 +14,56 @@ const vaultPath = process.argv[2];
 const configPath = process.argv[3];
 const runningEmoji = '🚀';
 const command = 'npm';
+
+
+async function addGitSubmodule() {
+  const submodulePath = '.contentlayer'; // Define your submodule path here
+  // clear the submodule
+  try {
+    // Check if the submodule already exists
+    const submoduleExists = fs.existsSync(submodulePath);
+    if (submoduleExists) {
+      console.log(`子模块 ${submodulePath} 已存在，正在删除...`);
+      await execSync(`git rm --cached ${submodulePath}`, { stdio: 'inherit' });
+      fs.rmSync(submodulePath, { recursive: true, force: true });
+      console.log(`✅ 子模块 ${submodulePath} 删除成功！`);
+    }
+
+    // Create .gitmodules file if it doesn't exist
+    if (!fs.existsSync('.gitmodules')) {
+      console.log('创建 .gitmodules 文件...');
+      const gitmodulesContent = `[submodule "${submodulePath}"]
+	path = ${submodulePath}
+	url = ${settings.gitRepoURL}
+`;
+      fs.writeFileSync('.gitmodules', gitmodulesContent, 'utf8');
+      console.log('✅ .gitmodules 文件创建成功！');
+    }
+
+    // Add the submodule
+    console.log('开始添加子模块...');
+    await execSync(`git submodule add --force ${settings.gitRepoURL} ${submodulePath}`, { stdio: 'inherit' });
+    console.log('✅ 子模块添加成功！');
+  } catch (error) {
+    console.error('❌ 添加子模块失败：', error.message);
+    process.exit(1);
+  }
+}
+
+async function updateGitSubmodule() {
+  try {
+    // 初始化 submodule
+    await execSync('git submodule init', { stdio: 'inherit' });
+
+    // 更新 submodule
+    await execSync('git submodule update', { stdio: 'inherit' });
+    console.log('✅ git submodule 初始化成功！');
+  } catch (error) {
+    console.error('❌ git submodule 安装失败：', error.message);
+    process.exit(1);
+  }
+}
+
 async function installContentlayer() {
   try {
     const args = ['install', '-g', 'contentlayer', 'playwright'];
@@ -23,6 +73,35 @@ async function installContentlayer() {
     // 监听输出
     child.stdout.on('data', (data) => {
       console.log(`${data}`);
+
+      const palywright = ['playwright', 'install']
+      const child2 = exec(`${command} ${palywright.join(' ')}`);
+      child2.stdout.on('data', (data) => {
+        console.log(`${data}`);
+
+        // bugfix: https://github.com/remcohaszing/remark-mermaidjs
+        const palywright2 = ['playwright', 'install', '--with-deps', 'chromium']
+        const child3 = exec(`${command} ${palywright2.join(' ')}`);
+        child3.stdout.on('data', (data) => {
+          console.log(`${data}`);
+        });
+
+        child3.stderr.on('data', (data) => {
+          console.error(`${data}`);
+        });
+
+        child3.on('close', (code) => {
+          console.log(`安装playwright 依赖完成，代码: ${code} 🎉`);
+        });
+      });
+
+      child2.stderr.on('data', (data) => {
+        console.error(`${data}`);
+      });
+
+      child2.on('close', (code) => {
+        console.log(`安装playwright完成，代码: ${code} 🎉`);
+      });
     });
 
     child.stderr.on('data', (data) => {
@@ -32,39 +111,13 @@ async function installContentlayer() {
     child.on('close', (code) => {
       console.log(`安装contentlayer完成，代码: ${code} 🎉`);
     });
-    // bugfix: https://github.com/remcohaszing/remark-mermaidjs
-    const palywright = ['npx', 'playwright', 'install']
-    const child2 = exec(`${command} ${palywright.join(' ')}`);
-    child2.stdout.on('data', (data) => {
-      console.log(`${data}`);
-    });
 
-    child2.stderr.on('data', (data) => {
-      console.error(`${data}`);
-    });
-
-    child2.on('close', (code) => {
-      console.log(`安装playwright完成，代码: ${code} 🎉`);
-    });
-    const palywright2 = ['npx', 'playwright', 'install', '--with-deps', 'chromium']
-    const child3 = exec(`${command} ${palywright2.join(' ')}`);
-    child3.stdout.on('data', (data) => {
-      console.log(`${data}`);
-    });
-
-    child3.stderr.on('data', (data) => {
-      console.error(`${data}`);
-    });
-
-    child3.on('close', (code) => {
-      console.log(`安装playwright 依赖完成，代码: ${code} 🎉`);
-    });
   } catch (error) {
     console.log('error', error);
   }
 }
 
-function installDeps() {
+async function installDeps() {
   try {
     console.log('check node_modules dependencies install')
     // 检查是否有node_modules，没有则安装
@@ -96,7 +149,7 @@ async function runNodeCLI() {
   // 如果不存在全局安装contentlayer，则先全局安装contentlayer，之后build
   try {
     const result = await new Promise((resolve, reject) => {
-      exec(`npx contentlayer build --config ${configPath}`, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
+      exec(`contentlayer build --config ${configPath}`, { encoding: 'utf8', shell: process.platform === 'win32' ? 'cmd.exe' : '/bin/bash' }, (error, stdout, stderr) => {
         if (error) {
           reject(`${error.message}\n${error.stack}`);
           return;
@@ -162,7 +215,7 @@ async function main() {
 
   app.post('/push-to-git', async function (req, res) {
     const { commitMessage } = req.body
-    await pushToGit(commitMessage)  
+    await pushToGit(commitMessage)
     res.send({
       code: 200,
       message: 'push to git done'
@@ -183,6 +236,17 @@ async function main() {
 
   app.listen(port, async () => {
     await checkContentlayer()
+    if (fs.existsSync('.gitmodules')) {
+      await updateGitSubmodule()
+    } else {
+      if (settings.gitRepoURL) {
+        await addGitSubmodule()
+        await updateGitSubmodule()
+      } else {
+        // console.error('gitRepoURL is not set, please set it in settings.json')
+        throw new Error('gitRepoURL is not set, please set it in settings.json')
+      }
+    }
     console.log(`Example app listening on port ${port}`)
   })
 }

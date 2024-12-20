@@ -101,6 +101,7 @@ try {
     fs.copyFileSync('manifest.json', path.resolve(baseDir, 'manifest.json'));
     fs.copyFileSync('contentlayer.config.js', path.resolve(baseDir, 'contentlayer.config.js'));
     fs.copyFileSync('package-deps.json', path.resolve(baseDir, 'package.json'));
+    fs.copyFileSync('siteMetadata.js', path.resolve(baseDir, 'siteMetadata.js'));
     console.log('manifest.json copied!');
 } catch (err) {
     console.error(err);
