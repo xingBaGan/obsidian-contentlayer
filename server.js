@@ -167,7 +167,7 @@ async function pushToGit(commitMessage) {
   console.log('git commit', commitMessage)
 
   const cdCommand = process.platform === 'win32' ? `cd "${settings.pluginFolderPath}\\${submodulePath}"` : `cd '${settings.pluginFolderPath}${submodulePath}'`;
-  const command = `${cdCommand} && git add . && git commit -m "${commitMessage}" && git push origin main`;
+  const command = `${cdCommand} && git add . && git commit -m "${commitMessage}" && git push origin main -f`;
   try {
     const result = await new Promise((resolve, reject) => {
       exec(`${cdCommand} && ${command}`, (error, stdout, stderr) => {
